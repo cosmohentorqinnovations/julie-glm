@@ -1,0 +1,43 @@
+name: Deploy JULIE AI to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Inject config from secrets
+        env:
+          GLM_BASE_URL: ${{ secrets.GLM_BASE_URL }}
+          GLM_MODEL:    ${{ secrets.GLM_MODEL }}
+          GLM_API_KEY:  ${{ secrets.GLM_API_KEY }}
+        run: |
+          cat > config.js << EOF
+          window.JULIE_CONFIG = {
+            GLM_BASE_URL: "${GLM_BASE_URL}",
+            GLM_MODEL:    "${GLM_MODEL}",
+            GLM_API_KEY:  "${GLM_API_KEY}",
+          };
+          EOF
+
+      - name: Write CNAME
+        run: echo "julie-glm.cosmohentorq.com" > CNAME
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: .
+          exclude_assets: '.github,config.example.js,.gitignore'
+          cname: julie-glm.cosmohentorq.com
