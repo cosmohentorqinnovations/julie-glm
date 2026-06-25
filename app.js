@@ -248,7 +248,7 @@ async function streamAssistantReply() {
           thinkingContent += delta.reasoning;
           if (!thinkingBlock) {
             thinkingBlock = createThinkingBlock();
-            currentRow.querySelector('.msg-content').insertBefore(thinkingBlock, bubbleEl.parentElement?.previousSibling || bubbleEl);
+            currentRow.querySelector('.msg-content').insertBefore(thinkingBlock, bubbleEl);
           }
           thinkingBlock.querySelector('.thinking-body').textContent = thinkingContent;
         }
